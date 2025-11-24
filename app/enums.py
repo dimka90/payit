@@ -4,13 +4,13 @@ from enum import Enum
 class Gender(Enum):
     male = 'M'
     female = 'F'
-    
+
 
 class Category(Enum):
     buyer = 'buyer'
     farmer = 'farmer'
 
-class ProductCategory(Enum):
+class ProductCategory(str, Enum):
     grain = "grain"
     vegetables = "vegatables"
     livestock = "livestock"
