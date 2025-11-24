@@ -1,0 +1,6 @@
+db:
+	sudo docker-compose up -d payit_db
+
+down:
+	sudo docker-compose down
+
