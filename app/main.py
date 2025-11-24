@@ -1,6 +1,7 @@
 from fastapi import FastAPI
 from .database import engine
 from .models.user import User
+from .models.product import Product
 from .models.base import Base
 from .routes.user import router as user_routes
 from .routes.auth import router as auth_routes

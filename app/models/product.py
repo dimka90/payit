@@ -2,10 +2,7 @@
 User
 - id INT PRIMARY KEY AUTO_INCREMENT NOT NULL,
 - name VARCHAR(30) NOT NULL,
-- description VARCHAR(11) UNIQUE NOT NULL,
-- email VARCHAR(100) UNIQUE NOT NULL,
-- password VARCHAR(150) NOT NULL,
-- gender ENUM('M', 'F') NOT NULL,
+- description VARCHAR(11) UNIQUE NOT NULL
 - category ENUM('buyer', 'farmer') NOT NULL,
 - location VARCHAR(255) NOT NULL,
 - created_at TIMESTAMP DEFAULT CURRENT TIMESTAMP NOT NULL,
@@ -19,6 +16,7 @@ from .base import Base
 from ..enums import ProductCategory, ProductStatus, ProuductUint
 
 class Product(Base):
+
     __tablename__ = "products"
 
     id = Column(Integer, primary_key=True, nullable=False, index = True)
@@ -29,7 +27,7 @@ class Product(Base):
     status = Column(SQLEnum(ProductStatus, default = ProductStatus.available, nullable = False))
     unit = Column(SQLEnum(ProuductUint), nullable= False)
     location = Column(String(255), nullable= False)
-    image_url = Column(255, nullable= False)
+    image_url = Column(String(255), nullable= False)
     created_at = Column(DateTime(timezone=True), server_default=func.now(), nullable=False)
     updated_at = Column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now(), nullable=False)
 
