@@ -11,7 +11,7 @@ User
 - created_at TIMESTAMP DEFAULT CURRENT TIMESTAMP NOT NULL,
 - updated_at TIMESTAMP DEFAULT CURRENT TIMESTAMP ON UPDATE CURRENT TIMESTAMP
 """
-
+from sqlalchemy.orm import relationship
 from sqlalchemy import Integer, Column, String, DateTime, Enum, func
 from .base import Base
 from ..enums import Gender, Category
@@ -28,3 +28,5 @@ class User(Base):
     location = Column(String(255), min_length=3, nullable=False)
     created_at = Column(DateTime(timezone=True), server_default=func.now(), nullable=False)
     updated_at = Column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now(), nullable=False)
+
+    products = relationship("Product", back_populates="farmer", cascade="all, delete-orphan")

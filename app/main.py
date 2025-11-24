@@ -5,6 +5,7 @@ from .models.product import Product
 from .models.base import Base
 from .routes.user import router as user_routes
 from .routes.auth import router as auth_routes
+from .routes.product import router as product_routes
 import logging
 
 logger = logging.getLogger(__name__)
@@ -20,6 +21,7 @@ app = FastAPI(
 
 app.include_router(user_routes)
 app.include_router(auth_routes)
+app.include_router(product_routes)
 
 @app.get("/")
 def home():
