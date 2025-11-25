@@ -1,4 +1,4 @@
-from fastapi import APIRouter, status, Depends, HTTPException
+from fastapi import APIRouter, status, Depends, HTTPException, File, UploadFile, Form
 from sqlalchemy.orm import Session
 from ..database import get_db
 from ..middlewares.auth import AuthMiddleware
@@ -9,6 +9,8 @@ from datetime import datetime
 from ..models.user import User
 import logging
 import pymysql
+
+from typing import Optional
 logger = logging.getLogger(__name__)
 router = APIRouter(
     prefix="/products",
@@ -51,3 +53,25 @@ def raiseError(e, status_code):
             "timestamp": f"{datetime.utcnow()}"
         }
     )
+
+
+# name: str = Field(min_length=3, max_length=30)
+#     description: Optional[str] = None
+#     status: ProductStatus
+#     category: ProductCategory
+#     price_per_unit: float = Field(gt=0, description="Price must be greater than 0")
+#     unit: ProuductUint
+#     location: str = Field(min_length=3, max_length=255)
+#     image_url: Optional[str] = None
+
+@router.post("/upload", status_code=status.HTTP_200_OK)
+async def upload_product(name: str= Form(...),
+                   description: Optional[str] = Form(...),
+                   status: str = Form(...),
+                   category: str = Form(...),
+                   price_per_uint : float = Form(...),
+                   uint: str = Form(...),
+                   location: str = Form(...),
+                   image_url: UploadFile = File(None)
+                   ):
+    print("File", image_url)
