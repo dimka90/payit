@@ -9,13 +9,16 @@ from datetime import datetime
 from ..models.user import User
 import logging
 import pymysql
-
+import os
+import aiofiles
 from typing import Optional
 logger = logging.getLogger(__name__)
 router = APIRouter(
     prefix="/products",
     tags=["products"]
 )
+UPLOAD_DIR = "/static/uploads"
+os.makedirs(UPLOAD_DIR, exist_ok=True)
 
 #todo, response model
 @router.post("/", status_code=status.HTTP_201_CREATED)
@@ -74,4 +77,11 @@ async def upload_product(name: str= Form(...),
                    location: str = Form(...),
                    image_url: UploadFile = File(None)
                    ):
-    print("File", image_url)
+    print("File", image_url.filename.split(".")[-1])
+    file_path = os.path.join(UPLOAD_DIR,image_url.filename)
+
+    async with aiofiles.open(file_path, "wb") as outputfile:
+        content = await image_url.read()
+        await outputfile.write(content)
+
+
