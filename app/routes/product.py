@@ -59,15 +59,6 @@ def raiseError(e, status_code):
     )
 
 
-# name: str = Field(min_length=3, max_length=30)
-#     description: Optional[str] = None
-#     status: ProductStatus
-#     category: ProductCategory
-#     price_per_unit: float = Field(gt=0, description="Price must be greater than 0")
-#     unit: ProuductUint
-#     location: str = Field(min_length=3, max_length=255)
-#     image_url: Optional[str] = None
-
 @router.post("/upload", status_code=status.HTTP_200_OK)
 async def upload_product(name: str= Form(...),
                    description: Optional[str] = Form(...),
