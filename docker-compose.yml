@@ -14,7 +14,7 @@ services:
       - DB_DATABASE=${DB_DATABASE}
     volumes:
       - ./app:/app/app
-      - ./app/static/uploads:/app/app/static/uploads
+      - ./app/static/uploads:/app/static/uploads
     depends_on:
       payit_db:
         condition: service_healthy
