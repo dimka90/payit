@@ -4,8 +4,9 @@ from ..database import get_db
 from ..middlewares.auth import AuthMiddleware
 from ..schemas.product import ProductCreate
 from ..models.product import Product
-from ..enums import Category
+from ..enums import Category,ProductCategory, ProductStatus, ProuductUint
 from datetime import datetime
+from uuid import uuid4
 from ..models.user import User
 import logging
 import pymysql
@@ -70,18 +71,72 @@ def raiseError(e, status_code):
 @router.post("/upload", status_code=status.HTTP_200_OK)
 async def upload_product(name: str= Form(...),
                    description: Optional[str] = Form(...),
-                   status: str = Form(...),
+                   status_val: str = Form(...),
                    category: str = Form(...),
                    price_per_uint : float = Form(...),
-                   uint: str = Form(...),
+                   unit: str = Form(...),
                    location: str = Form(...),
-                   image_url: UploadFile = File(None)
+                   image: UploadFile = File(None),
+                   curent_user: User = Depends(AuthMiddleware),
+                   db: Session = Depends(get_db)
                    ):
-    print("File", image_url.filename.split(".")[-1])
-    file_path = os.path.join(UPLOAD_DIR,image_url.filename)
+    print("File", image.filename.split(".")[-1].lower())
 
-    async with aiofiles.open(file_path, "wb") as outputfile:
-        content = await image_url.read()
-        await outputfile.write(content)
+    try:
+        category_enum = ProductCategory(category)
+        status_enum= ProductStatus(status_val)
+        unit_enum = ProuductUint(unit)
+    except ValueError as e:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=f"Invalid value for category, status or unit {str(e)}"
+        )
+    
+    # image processing
+    if image is not None and image.filename:
+        # todo validate file format
+        file_ext = image.filename.split(".")[-1].lower()
+        filname_unique = f"{uuid4()}.{file_ext}"
+
+        file_path = os.path.join(UPLOAD_DIR, filname_unique)
+        try:
+            async with aiofiles.open(file_path, "wb") as outputfile:
+                content = await image.read()
+                await outputfile.write(content)
+        except Exception as e:
+            raise HTTPException(
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                detail="AN error occured while saving the file"
+            )
+    else:
+        raise HTTPException(
+            status_code=status.HTTP_422_UNPROCESSABLE_CONTENT,
+            detail="File is  not an image"
+        )
+     
+    try: 
+        image_url = f"/static/uploads/products/{filname_unique}"   
+        new_product = Product(
+            name = name,
+            farmer_id = curent_user.id,
+            description = description,
+            category = category_enum.value,
+            status = status_enum.value,
+            unit = unit_enum.value,
+            location = location,
+            image_url = image_url
+        )
+        db.add(new_product)
+        db.commit()
+        db.refresh(new_product)
+
+        return {
+            "Success": True,
+            "detail": new_product,
+            "message": "Product sucessfully saved" 
+        }
+    except ValueError as e:
+        pass
+
 
 
