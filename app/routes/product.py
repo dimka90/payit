@@ -17,7 +17,7 @@ router = APIRouter(
     prefix="/products",
     tags=["products"]
 )
-UPLOAD_DIR = "/static/uploads"
+UPLOAD_DIR = "app/static/uploads"
 os.makedirs(UPLOAD_DIR, exist_ok=True)
 
 #todo, response model
